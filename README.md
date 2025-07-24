@@ -4,7 +4,6 @@
 
   ## Pré-requisitos
 
-  - **Sistema Operacional**: Linux Debian 12 (ou compatível).
   - **Dependências**:
     - PHP 8.1 ou superior.
     - Composer (gerenciador de dependências PHP).
