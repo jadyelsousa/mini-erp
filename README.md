@@ -1,61 +1,109 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# MiniERP - Sistema de Gerenciamento de Pedidos
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+  Este é um projeto Laravel que implementa um sistema básico de gerenciamento de pedidos (MiniERP), incluindo carrinho, checkout, envio de e-mails de confirmação via SendGrid e webhooks para atualizações de status.
 
-## About Laravel
+  ## Pré-requisitos
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+  - **Sistema Operacional**: Linux Debian 12 (ou compatível).
+  - **Dependências**:
+    - PHP 8.1 ou superior.
+    - Composer (gerenciador de dependências PHP).
+    - Node.js e NPM (para assets como `money-mask.js`).
+    - MySQL 8.0 ou superior.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+  ## Passo a Passo para Instalação
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+  ### 1. Clonar o Repositório
+  Clone o repositório para sua máquina local:
+  ```bash
+  git clone https://github.com/jadyelsousa/mini-erp.git
+  cd mini-erp
+  ```
 
-## Learning Laravel
+  ### 2. Instalar Dependências PHP
+  Instale as dependências do Composer:
+  ```bash
+  composer install
+  ```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+  ### 3. Configurar o Ambiente
+  - Copie o arquivo de exemplo de ambiente:
+    ```bash
+    cp .env.example .env
+    ```
+  - Edite o arquivo `.env` para configurar o banco de dados e o SendGrid:
+    ```bash
+    nano .env
+    ```
+  - Atualize as seguintes variáveis (exemplo):
+    ```env
+    APP_NAME=MiniERP
+    APP_URL=http://localhost
+    APP_ENV=local
+    APP_DEBUG=true
+    APP_KEY=base64:seu_app_key_aqui (gerar com `php artisan key:generate`)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=minierp
+    DB_USERNAME=seu_usuario_mysql
+    DB_PASSWORD=sua_senha_mysql
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+    MAIL_MAILER=smtp
+    MAIL_HOST=smtp.sendgrid.net
+    MAIL_PORT=587
+    MAIL_USERNAME=apikey
+    MAIL_PASSWORD=sua_chave_api_sendgrid
+    MAIL_ENCRYPTION=tls
+    MAIL_FROM_ADDRESS="no-reply@minierp.com"
+    MAIL_FROM_NAME="MiniERP"
 
-## Laravel Sponsors
+    QUEUE_CONNECTION=sync
+    ```
+  - Gere a chave do aplicativo:
+    ```bash
+    php artisan key:generate
+    ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+  ### 4. Configurar o Banco de Dados
+  - Crie o banco de dados MySQL:
+    ```bash
+    mysql -u seu_usuario_mysql -p
+    CREATE DATABASE minierp CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    EXIT;
+    ```
+  - Rode as migrações para criar as tabelas:
+    ```bash
+    php artisan migrate
+    ```
 
-### Premium Partners
+  ### 5. Popular o Banco com Seeders
+  Insira dados iniciais (produtos, estoque, etc.):
+  ```bash
+    php artisan db:seed
+    ```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+  ### 6. Executar o Projeto
+  Inicie o servidor Laravel:
+  ```bash
+  php artisan serve
+  ```
+  Acesse em: `http://localhost:8000`.
 
-## Contributing
+  ### 7. Testar Funcionalidades
+  - **Carrinho e Checkout**: Acesse `http://localhost:8000/cart` e `http://localhost:8000/checkout`.
+  - **E-mail de Confirmação**: Configure o SendGrid no `.env` e teste o checkout.
+  - **Webhook**: Teste a rota `/webhook` com o comando:
+    ```bash
+    curl --request POST --url http://localhost:8000/api/webhook --header 'Content-Type: application/json' --header 'Accept: application/json' --data '{"order_id":1,"status":"approved"}'
+    ```
+    Ou use o Insomnia com o mesmo payload.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+  ## Estrutura do Projeto
+  - `app/Http/Controllers/`: Controladores como `CheckoutController` e `WebhookController`.
+  - `database/migrations/`: Migrações para tabelas (ex.: `orders`, `order_items`).
+  - `database/seeders/`: Seeders para dados iniciais.
+  - `resources/views/`: Views como `checkout.index` e `emails/order_confirmation`.
+  - `public/js/`: Arquivos JavaScript (ex.: `money-mask.js`).
+  - `.env`: Configurações de ambiente.
