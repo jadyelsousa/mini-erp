@@ -80,8 +80,8 @@
   ### 5. Popular o Banco com Seeders
   Insira dados iniciais (produtos, estoque, etc.):
   ```bash
-    php artisan db:seed
-    ```
+  php artisan db:seed
+  ```
 
   ### 6. Executar o Projeto
   Inicie o servidor Laravel:
